@@ -49,6 +49,7 @@ const Contact = () => {
     
     try {
       console.log("Submitting contact form:", values);
+      console.log("Function URL:", '/.netlify/functions/send-email');
       
       // Send email using Netlify Function
       const response = await fetch('/.netlify/functions/send-email', {
@@ -60,6 +61,7 @@ const Contact = () => {
       });
 
       console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -78,11 +80,24 @@ const Contact = () => {
       console.error("Error sending email:", error);
       console.error("Error details:", {
         message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : 'Unknown'
       });
       
+      // More specific error message
+      let errorMessage = "Please try again or contact us directly at +91 8587824167";
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          errorMessage = "Network error - please check your connection and try again";
+        } else if (error.message.includes('404')) {
+          errorMessage = "Function not found - please contact support";
+        } else if (error.message.includes('500')) {
+          errorMessage = "Server error - please try again later";
+        }
+      }
+      
       toast.error("Failed to send message", {
-        description: "Please try again or contact us directly at +91 8587824167",
+        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false);

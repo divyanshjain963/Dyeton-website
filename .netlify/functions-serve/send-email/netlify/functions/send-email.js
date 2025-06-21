@@ -6393,10 +6393,11 @@ var handler = async (event, context) => {
   try {
     const { companyName, name, designation, email, countryCode, phoneNumber, message } = JSON.parse(event.body);
     console.log("Received email request:", { companyName, name, email });
+    const apiKey = process.env.RESEND_API_KEY || "re_7Mtajhbe_AtdHr3bTYHbwGAz6ey91Xt9w";
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": "Bearer re_7Mtajhbe_AtdHr3bTYHbwGAz6ey91Xt9w",
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({

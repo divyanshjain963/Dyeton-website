@@ -5,7 +5,7 @@ export const handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
   };
 
   // Handle preflight requests
@@ -17,13 +17,31 @@ export const handler = async (event, context) => {
     };
   }
 
+  // Test endpoint
+  if (event.httpMethod === 'GET') {
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ 
+        message: 'Email function is working!',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+      })
+    };
+  }
+
   try {
     const { companyName, name, designation, email, countryCode, phoneNumber, message } = JSON.parse(event.body);
 
     console.log('Received email request:', { companyName, name, email });
+    console.log('Environment variables:', {
+      hasApiKey: !!process.env.RESEND_API_KEY,
+      nodeEnv: process.env.NODE_ENV
+    });
 
     // Get API key from environment variable
     const apiKey = process.env.RESEND_API_KEY || 're_7Mtajhbe_AtdHr3bTYHbwGAz6ey91Xt9w';
+    console.log('Using API key:', apiKey ? 'Present' : 'Missing');
 
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -50,6 +68,8 @@ export const handler = async (event, context) => {
       }),
     });
 
+    console.log('Resend API response status:', response.status);
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Resend API Error:', errorText);
@@ -58,7 +78,8 @@ export const handler = async (event, context) => {
         headers,
         body: JSON.stringify({ 
           error: 'Failed to send email', 
-          details: errorText 
+          details: errorText,
+          status: response.status
         })
       };
     }
@@ -83,7 +104,8 @@ export const handler = async (event, context) => {
       headers,
       body: JSON.stringify({ 
         error: 'Internal server error', 
-        message: error.message 
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       })
     };
   }
