@@ -1,4 +1,3 @@
-
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -13,6 +12,7 @@ import ProtectiveCoating from "./pages/products/ProtectiveCoating";
 import IndustrialCoating from "./pages/products/IndustrialCoating";
 import SpecialtyCoating from "./pages/products/SpecialtyCoating";
 import TrafficSolutions from "./pages/products/TrafficSolutions";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +20,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <Sonner />
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />

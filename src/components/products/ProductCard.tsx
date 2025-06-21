@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,6 +16,7 @@ const ProductCard = ({ product }: { product: Product }) => (
         <img 
           src={product.image} 
           alt={product.name}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </div>
