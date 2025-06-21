@@ -1,4 +1,6 @@
-exports.handler = async (event, context) => {
+import fetch from 'node-fetch';
+
+export const handler = async (event, context) => {
   // Handle CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -29,9 +31,6 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Dynamic import for node-fetch
-    const fetch = (await import('node-fetch')).default;
-    
     const { companyName, name, designation, email, countryCode, phoneNumber, message } = JSON.parse(event.body);
 
     console.log('Received email request:', { companyName, name, email });
